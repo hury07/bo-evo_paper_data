@@ -1,0 +1,44 @@
+#######################
+### evaluation mode ###
+#######################
+eval_mode = false
+testset_path = ''
+
+#################
+### I\O setup ###
+#################
+output_dir = "data/runs"
+
+#######################
+### landscape setup ###
+#######################
+landscape_names = ["gb1:trainset"]
+starts = "starts"
+
+####################
+### method setup ###
+####################
+### explorer ###
+explorer_names = ["bo_evo"]
+bo_util_funcs = ["UCB"]
+bo_uf_params = [0.2]
+
+### batch size ###
+expmt_queries_per_round = [384]
+model_queries_per_round = [3072]
+
+### input encoding strategy ###
+encodings = ["onehot"]
+# "onehot", "georgiev", "unirep", "transformer", "esm-1v", "prot_t5_xl_uniref50"
+
+### fitness model ###
+model_names = ["gpr"]
+gp_kernels = ["RBF"]
+warm_start = ["cool"]
+
+########################
+### simulation setup ###
+########################
+verbose = false
+seeds = [1, 12, 123, 1234, 12345]
+rounds = [5]
