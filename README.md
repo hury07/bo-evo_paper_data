@@ -5,7 +5,7 @@
 ## Code download
 1. Clone this repository and `cd` into it.
     ```console
-    git clone https://github.com/hury07/fasthit.git
+    git clone https://github.com/hury07/bo-evo_paper_data.git
     cd bo-evo_paper_data
     ```
 ## Run experiments
@@ -13,7 +13,7 @@
     ~~~
     CUDA_VISIBLE_DEVICES=0 python code/run_main.py code/configs/gb1.budget.toml
     ~~~
-    Configuration is set in .toml config file. A template is given in [code/configs/gb1.template.toml](./code/configs/gb1.template.toml).
+    Configuration is given by config file *.toml. A template is given as [code/configs/gb1.template.toml](./code/configs/gb1.template.toml).
 2. Run with wet-lab measurement.
     ~~~
     CUDA_VISIBLE_DEVICES=0 python code/run_rhla.py
