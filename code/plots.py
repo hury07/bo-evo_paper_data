@@ -1,4 +1,3 @@
-
 from posixpath import dirname
 from typing import Dict, Optional, Sequence, Union
 import os
@@ -352,18 +351,6 @@ def RS(
     subgraph_size: int = 4,
     amino_acids: str = 'ACDEFGHIKLMNPQRSTVWY',
 ):
-    def compute_rs(comps, aa, df):
-        cond = pd.concat(
-            [
-                df['seq'].apply(lambda x: True if x[pos] == aa else False)
-                for pos in comps
-            ],
-            axis=1
-        ).all(axis=1)
-        subgraph = df[cond == True].to_numpy()
-        landscape_protein = Protein_Landscape(data=subgraph)
-        return landscape_protein.RS_ruggedness
-
     rs = []
     for landscape, file in zip(landscapes, files):
         if os.path.exists(file):

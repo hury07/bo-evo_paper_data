@@ -1,5 +1,4 @@
 import os
-
 import sys
 import pandas as pd
 import toml
@@ -10,14 +9,7 @@ import torch
 import fasthit
 from fasthit.utils import utils
 import fasthit.utils.sequence_utils as s_utils
-
-import sys
-from os.path import dirname, join, isfile
-sys.path.append(dirname(__file__))
-if isfile(join(dirname(__file__), 'dms.py')):
-    from dms import generate_dms_variants
-else:
-    raise ImportError
+from fasthit.utils.dms import generate_dms_variants
 
 
 def make_landscape(type_name, spec_name):
@@ -40,7 +32,6 @@ def make_landscape(type_name, spec_name):
     else:
         pass
     return problem, landscape, alphabet
-
 
 def make_encoder(name, landscape, alphabet):
     if type(name) is list:
@@ -80,7 +71,6 @@ def make_encoder(name, landscape, alphabet):
     else:
         pass
     return encoder
-
 
 def make_model(name, seq_length, n_features, landscape, **kwargs):
     if name == "linear":
@@ -122,7 +112,6 @@ def make_model(name, seq_length, n_features, landscape, **kwargs):
         pass
     return model
 
-
 def make_explorer(
     name, alphabet, encoder, model,
     start_seq, rounds, bz_expmt, bz_model,
@@ -140,7 +129,6 @@ def make_explorer(
             alphabet=alphabet,
             log_file=log_file,
             seed=kwargs["seed"],
-            # elitist=True,
         )
     elif name == "random_ms":
         explorer = fasthit.explorers.Random(
@@ -166,17 +154,6 @@ def make_explorer(
             alphabet=alphabet,
             log_file=log_file,
             seed=kwargs["seed"],
-        )
-    elif name == "mlde":
-        explorer = fasthit.explorers.MLDE(
-            encoder,
-            model,
-            rounds=4,
-            expmt_queries_per_round=bz_expmt,
-            model_queries_per_round=bz_model,
-            starting_sequence=start_seq,
-            alphabet=alphabet,
-            log_file=log_file,
         )
     elif name == "bo_enu":
         explorer = fasthit.explorers.bo.BO_ENU(
@@ -210,28 +187,28 @@ def make_explorer(
         pass
     return explorer
 
-
-def explore(config_file):
-    ###
-    eval_models = False
-    data_dir = "~/src/fasthit/fasthit/landscapes/data/gb1/"
-    testset = pd.read_csv(
-        os.path.join(data_dir, "testset.csv")
-    ).to_numpy()
-    ###
+def main(config_file):
     directory = os.path.split(config_file)[-1].split('.')[1]
     cfg = toml.load(config_file)
+    ###
+    eval_models = cfg.pop('eval_mode')
+    testset_path = cfg.pop('testset_path')
+    testset = pd.read_csv(testset_path).to_numpy()
+    ###
+    output_dir = cfg.pop('output_dir')
     verbose = cfg.pop('verbose')
     starts = cfg.pop('starts')
     seeds = cfg.pop('seeds')
-    #
+    ###
     elapsed_times = []
     for cur_iter in itertools.product(*cfg.values()):
-        rounds, expmt_queries_per_round, model_queries_per_round, \
-            landscape_name, explorer_name, warm_start, encoding, model_name, gp_kernel, \
-            bo_util_func, bo_uf_param \
-            = cur_iter
-
+        landscape_name, \
+        explorer_name, bo_util_func, bo_uf_param, \
+        expmt_queries_per_round, model_queries_per_round, \
+        encoding, model_name, gp_kernel, \
+        warm_start, rounds \
+        = cur_iter
+        
         ###
         type_name, spec_name = landscape_name.split(":")
         problem, landscape, alphabet = make_landscape(type_name, spec_name)
@@ -247,7 +224,6 @@ def explore(config_file):
             for j, start_seq in enumerate(problem[starts]):
                 utils.set_torch_seed(seed)
                 ###
-                # encoder = make_encoder(encoding, landscape, alphabet)
                 model = make_model(
                     model_name, len(start_seq), encoder.n_features, landscape,
                     **kwargs
@@ -255,30 +231,24 @@ def explore(config_file):
                 ###
                 k = i*len(problem[starts]) + j
                 subdirs = {
-                    'MER': int(model_queries_per_round/expmt_queries_per_round),
                     'rounds': expmt_queries_per_round,
                     'budget': expmt_queries_per_round,
+                    'model': encoding,
                     'encoder': encoding,
-                    'explorer': explorer_name,
                     'warm_start': warm_start,
-                    'wt_only': warm_start,
+                    'explorer': explorer_name,
                     'landscape': spec_name,
-                    "model": encoding,
+                    'MER': int(model_queries_per_round/expmt_queries_per_round),
+                    'wt_only': warm_start,
                 }
                 log_file = (
-                    f"runs_new/{type_name}/"
+                    f"{output_dir}/{type_name}/"
                     + f"{directory}/"
                     + f"{subdirs[directory]}"
                     + f"/run{k}.csv"
                 )
-                # log_file = (
-                #     f"runs_new/compare/"
-                #     + f"{explorer_name}/"
-                #     + f"{type_name}_{spec_name}"
-                #     + f"/run{k}.csv"
-                # )
                 eval_file = (
-                    f"runs_new/{type_name}/"
+                    f"{output_dir}/{type_name}/"
                     + f"{directory}/"
                     + f"{subdirs[directory]}"
                     + f"/eval{k}.csv"
@@ -300,8 +270,7 @@ def explore(config_file):
                         landscape, verbose=False,
                         eval_models=eval_models, testset=testset, eval_file=eval_file,
                     )
-                elapsed_times.append(
-                    [spec_name, explorer_name, time.time() - start, k])
+                elapsed_times.append([spec_name, explorer_name, time.time() - start, k])
                 del explorer, model
                 torch.cuda.empty_cache()
     if verbose:
@@ -309,9 +278,7 @@ def explore(config_file):
             elapsed_times,
             columns=['landscape', 'explorer', 'time(s)', 'simulation']
         )
-        elapsed_times.to_csv(
-            f"runs/{type_name}/{directory}/time.csv", index=False)
-
+        elapsed_times.to_csv(f"{output_dir}/{type_name}/{directory}/time.csv", index=False)
 
 if __name__ == "__main__":
-    explore(sys.argv[1])
+    main(sys.argv[1])

@@ -10,6 +10,7 @@ fitness_file = f"../data/{task}/measured_seqs.csv"
 wt_file = f"../data/{task}/wt_seq.fasta"
 search_space = "R74,A101,L148,S173"
 start_seq = "RALS"
+output_dir = "data/runs"
 
 
 def main():
@@ -30,11 +31,10 @@ def main():
         batch_size=32,
     )
 
-    # utils.set_torch_seed(seed)
     model = fasthit.models.GPRegressor(kernel="RBF")
 
     log_file = (
-        f"runs/{task}/run0.csv"
+        f"{output_dir}/{task}/run0.csv"
     )
 
     explorer = fasthit.explorers.bo.BO_EVO(
@@ -51,7 +51,7 @@ def main():
     )
 
     explorer.run(landscape, verbose=True,
-                 init_seqs_file=f"../data/{task}/init_seqs.csv")
+                 init_seqs_file=f"data/{task}/init_seqs.csv")
     torch.cuda.empty_cache()
 
 

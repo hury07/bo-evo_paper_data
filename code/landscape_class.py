@@ -7,8 +7,8 @@ import tqdm as tqdm
 import multiprocessing as mp
 from functools import partial, reduce
 
-from colorama import Fore
-from colorama import Style
+# from colorama import Fore
+# from colorama import Style
 
 from sklearn.metrics import mean_squared_error
 from sklearn.linear_model import LinearRegression
@@ -244,27 +244,27 @@ class Protein_Landscape():
     def seed(self):
         return self.seed_seq
 
-    def __str__(self):
-        # TODO Change print formatting for seed sequence so it doesn't look bad
-        return """
-        Protein Landscape class
-            Number of Sequences : {0}
-            Max Distance        : {1}
-            Number of Distances : {2}
-            Seed Sequence       : {3}
-                Modified positions are shown in green
-            Number of minima : {4}
-            Number of maxima : {5}
-            Normalized Extrema Ruggedness : {6}
-            R/S Ruggedness : {7}
-        """.format(len(self),
-                   self.max_distance,
-                   len(self.d_data),
-                   self.coloured_seed_string(),
-                   self.num_minima,
-                   self.num_maxima,
-                   self.extrema_ruggedness,
-                   self.RS_ruggedness)
+    # def __str__(self):
+    #     # TODO Change print formatting for seed sequence so it doesn't look bad
+    #     return """
+    #     Protein Landscape class
+    #         Number of Sequences : {0}
+    #         Max Distance        : {1}
+    #         Number of Distances : {2}
+    #         Seed Sequence       : {3}
+    #             Modified positions are shown in green
+    #         Number of minima : {4}
+    #         Number of maxima : {5}
+    #         Normalized Extrema Ruggedness : {6}
+    #         R/S Ruggedness : {7}
+    #     """.format(len(self),
+    #                self.max_distance,
+    #                len(self.d_data),
+    #                self.coloured_seed_string(),
+    #                self.num_minima,
+    #                self.num_maxima,
+    #                self.extrema_ruggedness,
+    #                self.RS_ruggedness)
 
     def __repr__(self):
         # TODO Finish this
