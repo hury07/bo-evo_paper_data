@@ -1,8 +1,8 @@
 #######################
 ### evaluation mode ###
 #######################
-eval_mode = false
-testset_path = ''
+eval_mode = true
+testset_path = '/home/hury/src/fasthit/fasthit/landscapes/data/gb1/testset.csv'
 
 #################
 ### I\O setup ###

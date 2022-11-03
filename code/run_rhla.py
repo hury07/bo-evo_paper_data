@@ -5,9 +5,9 @@ from fasthit.utils import utils
 import fasthit.utils.sequence_utils as s_utils
 
 task = "rhla"
-sequence_file = f"../data/{task}/proposed_seqs.csv"
-fitness_file = f"../data/{task}/measured_seqs.csv"
-wt_file = f"../data/{task}/wt_seq.fasta"
+sequence_file = f"data/{task}/proposed_seqs.csv"
+fitness_file = f"data/{task}/measured_seqs.csv"
+wt_file = f"data/{task}/wt_seq.fasta"
 search_space = "R74,A101,L148,S173"
 start_seq = "RALS"
 output_dir = "data/runs"

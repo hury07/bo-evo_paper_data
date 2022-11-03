@@ -130,19 +130,6 @@ def make_explorer(
             log_file=log_file,
             seed=kwargs["seed"],
         )
-    elif name == "random_ms":
-        explorer = fasthit.explorers.Random(
-            encoder,
-            model,
-            rounds=rounds,
-            expmt_queries_per_round=bz_expmt,
-            model_queries_per_round=bz_model,
-            starting_sequence=start_seq,
-            alphabet=alphabet,
-            log_file=log_file,
-            seed=kwargs["seed"],
-            elitist=True,
-        )
     elif name == "adalead":
         explorer = fasthit.explorers.Adalead(
             encoder,
@@ -191,9 +178,11 @@ def main(config_file):
     directory = os.path.split(config_file)[-1].split('.')[1]
     cfg = toml.load(config_file)
     ###
-    eval_models = cfg.pop('eval_mode')
+    eval_mode = cfg.pop('eval_mode')
     testset_path = cfg.pop('testset_path')
-    testset = pd.read_csv(testset_path).to_numpy()
+    testset = None
+    if eval_mode:
+        testset = pd.read_csv(testset_path).to_numpy()
     ###
     output_dir = cfg.pop('output_dir')
     verbose = cfg.pop('verbose')
@@ -268,7 +257,7 @@ def main(config_file):
                 else:
                     explorer.run(
                         landscape, verbose=False,
-                        eval_models=eval_models, testset=testset, eval_file=eval_file,
+                        eval_models=eval_mode, testset=testset, eval_file=eval_file,
                     )
                 elapsed_times.append([spec_name, explorer_name, time.time() - start, k])
                 del explorer, model

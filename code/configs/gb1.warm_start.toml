@@ -34,7 +34,7 @@ encodings = ["onehot"]
 model_names = ["gpr"]
 gp_kernels = ["RBF"]
 
-warm_start = ["cool"]
+warm_start = ["warm"]
 # cool, warm
 
 ########################
