@@ -20,7 +20,7 @@ starts = "starts"
 ####################
 ### explorer ###
 explorer_names = ["bo_evo"]
-# "random", "adalead", "bo_evo", "bo_enu"
+# "random", "adalead", "mcmc", "bo_evo", "bo_enu"
 
 bo_util_funcs = ["UCB"]
 bo_uf_params = [0.2]

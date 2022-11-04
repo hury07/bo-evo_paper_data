@@ -170,6 +170,21 @@ def make_explorer(
             util_func=kwargs["util_func"],
             uf_param=kwargs["uf_param"],
         )
+    elif name == "mcmc":
+        explorer = fasthit.explorers.mcmc.MCMC(
+            encoder,
+            model,
+            rounds=rounds,
+            expmt_queries_per_round=bz_expmt,
+            model_queries_per_round=bz_model,
+            starting_sequence=start_seq,
+            alphabet=alphabet,
+            log_file=log_file,
+            seed=kwargs["seed"],
+            mu=1.2,
+            temperature=0.06,
+            batch_size=10,
+        )
     else:
         pass
     return explorer
@@ -197,7 +212,6 @@ def main(config_file):
         encoding, model_name, gp_kernel, \
         warm_start, rounds \
         = cur_iter
-        
         ###
         type_name, spec_name = landscape_name.split(":")
         problem, landscape, alphabet = make_landscape(type_name, spec_name)
